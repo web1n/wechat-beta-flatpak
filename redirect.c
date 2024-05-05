@@ -15,7 +15,7 @@ void hook_path(const char *func, const char **path) {
     if (strcmp(*path, "/usr/lib/libactivation.so") == 0) {
         redirect = "/app/lib/libactivation.so";
     } else if (strcmp(*path, "/etc/lsb-release") == 0) {
-        redirect = "/app/etc/lsb-release-ukui";
+        redirect = "/app/extra/etc/lsb-release-ukui";
     }
 
     if (redirect != NULL) {

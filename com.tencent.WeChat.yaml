@@ -50,23 +50,11 @@ modules:
   - name: libactivation
     buildsystem: simple
     build-commands:
-      - bsdtar --to-stdout -xf wechat.deb data.* | bsdtar -xf -
       - gcc -shared -fPIC activation.c -o libactivation.so -ldl
       - install -Dm644 libactivation.so -t $FLATPAK_DEST/lib/
-      - install -Dm644 etc/.kyact etc/lsb-release-ukui -t $FLATPAK_DEST/etc/
     sources:
       - type: file
         path: activation.c
-      - type: file
-        url: https://archive2.kylinos.cn/deb/kylin/production/PART-openKylin/custom/partner/openKylin/pool/all/wechat-beta_1.0.0.238_amd64.deb
-        sha256: 912cfd30641ef376a680b05c6bdcb70cb3f154cb9eb6d0d3a57d23befe23b99c
-        dest-filename: wechat.deb
-        x-checker-data:
-          type: debian-repo
-          package-name: wechat-beta
-          root: https://archive2.kylinos.cn/deb/kylin/production/PART-openKylin/custom/partner/openKylin
-          dist: default
-          component: all
 
   - name: libredirect
     buildsystem: simple
@@ -108,16 +96,49 @@ modules:
         url: https://gitlab.archlinux.org/archlinux/packaging/packages/noto-fonts-cjk/-/raw/5fd3534bf7a6e26c7506dc8f40dcd89f37d35627/70-noto-cjk.conf
         sha256: 2417ac0e6720fe8da55ee59f16e36cfe96737bc21432460a322bb0f395e3a521
 
-  - name: wechat-deb
+  - name: wechat
     buildsystem: simple
     build-commands:
-      - bsdtar --to-stdout -xf wechat.deb data.* | bsdtar -xf -
-      - mv opt/wechat-beta -T $FLATPAK_DEST/wechat
+      - install -Dm644 com.tencent.WeChat.metainfo.xml -t $FLATPAK_DEST/share/metainfo
+      - install -Dm644 com.tencent.WeChat.png -t $FLATPAK_DEST/share/icons/hicolor/256x256/apps
+      - install -Dm644 com.tencent.WeChat.desktop -t $FLATPAK_DEST/share/applications
+      - install -D apply_extra.sh $FLATPAK_DEST/bin/apply_extra
+      - install -D wechat.sh $FLATPAK_DEST/bin/wechat
+      - install -D dde-file-manager.sh $FLATPAK_DEST/bin/dde-file-manager
     sources:
+      - type: script
+        dest-filename: apply_extra.sh
+        commands:
+          - bsdtar --to-stdout -xf wechat.deb data.* | bsdtar -xf -
+          - mv opt/wechat-beta -T wechat
+          - bsdtar --to-stdout -xf wechat-openKylin.deb data.* | bsdtar -xf -
+          - rm -r wechat.deb wechat-openKylin.deb opt usr
       - type: file
+        path: dde-file-manager.sh
+      - type: file
+        path: wechat.sh
+      - type: file
+        path: com.tencent.WeChat.metainfo.xml
+      - type: file
+        path: com.tencent.WeChat.png
+      - type: file
+        path: com.tencent.WeChat.desktop
+      - type: extra-data
+        url: https://archive2.kylinos.cn/deb/kylin/production/PART-openKylin/custom/partner/openKylin/pool/all/wechat-beta_1.0.0.238_amd64.deb
+        sha256: 912cfd30641ef376a680b05c6bdcb70cb3f154cb9eb6d0d3a57d23befe23b99c
+        size: 116767436
+        filename: wechat-openKylin.deb
+        x-checker-data:
+          type: debian-repo
+          package-name: wechat-beta
+          root: https://archive2.kylinos.cn/deb/kylin/production/PART-openKylin/custom/partner/openKylin
+          dist: default
+          component: all
+      - type: extra-data
         url: https://archive2.kylinos.cn/deb/kylin/production/PART-V10-SP1/custom/partner/V10-SP1/pool/all/wechat-beta_1.0.0.241_amd64.deb
         sha256: 4ffe0cda779b46ad5d76b85bdc65136c9c89add4d0bc1175a34d8b94f516c4fb
-        dest-filename: wechat.deb
+        size: 110229852
+        filename: wechat.deb
         only-arches: [x86_64]
         x-checker-data:
           type: debian-repo
@@ -126,10 +147,11 @@ modules:
           dist: default
           component: all
           is-main-source: true
-      - type: file
+      - type: extra-data
         url: https://archive2.kylinos.cn/deb/kylin/production/PART-V10-SP1/custom/partner/V10-SP1/pool/all/wechat-beta_1.0.0.241_arm64.deb
         sha256: 344365a011e746fc682d7112d435a70484044e395c04a57b74aa27676af7026f
-        dest-filename: wechat.deb
+        size: 100682956
+        filename: wechat.deb
         only-arches: [aarch64]
         x-checker-data:
           type: debian-repo
@@ -138,27 +160,3 @@ modules:
           dist: default
           component: all
           is-main-source: true
-
-  - name: wechat
-    buildsystem: simple
-    build-commands:
-      - install -Dm644 com.tencent.WeChat.metainfo.xml -t $FLATPAK_DEST/share/metainfo
-      - install -Dm644 com.tencent.WeChat.png -t $FLATPAK_DEST/share/icons/hicolor/256x256/apps
-      - install -Dm644 com.tencent.WeChat.desktop -t $FLATPAK_DEST/share/applications
-      - install -D wechat.sh $FLATPAK_DEST/bin/wechat
-      - install -D dde-file-manager.sh $FLATPAK_DEST/bin/dde-file-manager
-    sources:
-      - type: file
-        path: dde-file-manager.sh
-
-      - type: file
-        path: wechat.sh
-
-      - type: file
-        path: com.tencent.WeChat.metainfo.xml
-
-      - type: file
-        path: com.tencent.WeChat.png
-
-      - type: file
-        path: com.tencent.WeChat.desktop

@@ -5,7 +5,7 @@
 char *get_value(const char *func, const char *key) {
     char *value;
 
-    FILE *fp = fopen("/app/etc/.kyact", "r");
+    FILE *fp = fopen("/app/extra/etc/.kyact", "r");
     char buffer[50];
     while (fgets(buffer, sizeof(buffer), fp)) {
         buffer[strcspn(buffer, "\n")] = '\0';
