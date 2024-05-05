@@ -109,6 +109,7 @@ modules:
       - type: script
         dest-filename: apply_extra.sh
         commands:
+          - export LC_ALL=C
           - bsdtar --to-stdout -xf wechat.deb data.* | bsdtar -xf -
           - mv opt/wechat-beta -T wechat
           - bsdtar --to-stdout -xf wechat-openKylin.deb data.* | bsdtar -xf -
